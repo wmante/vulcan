@@ -1,0 +1,61 @@
+[tool.poetry]
+name = "vulcan"
+version = "0.1.0"
+description = "Autonomous coding agent that can write, test, and deploy code based on user instructions"
+authors = ["Antoine tehio <tehio.ant@gmail.com>"]
+readme = "README.md"
+packages = [{include = "vulcan", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.95.0"
+uvicorn = "^0.21.1"
+pydantic = "^1.10.7"
+requests = "^2.28.2"
+streamlit = "^1.21.0"
+python-dotenv = "^1.0.0"
+langfuse = "^1.0.0"
+prefect = "^2.10.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+pytest-cov = "^4.1.0"
+black = "^23.3.0"
+isort = "^5.12.0"
+flake8 = "^6.0.0"
+mypy = "^1.2.0"
+httpx = "^0.24.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test*"
+addopts = "--cov=src --cov-report=term-missing"
+pythonpath = [".", "src"]
+
+[tool.poetry.scripts]
+vulcan = "src.apps.cli.main:main"
+vulcan-api = "src.apps.api.main:start"
+vulcan-web = "src.apps.web.main:main"

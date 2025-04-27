@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.5.1
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Install dependencies
+      run: |
+        poetry install
+    
+    - name: Lint with flake8
+      run: |
+        poetry run flake8 packages/ tests/
+    
+    - name: Check formatting with black
+      run: |
+        poetry run black --check packages/ tests/
+    
+    - name: Check imports with isort
+      run: |
+        poetry run isort --check-only packages/ tests/
+    
+    - name: Type check with mypy
+      run: |
+        poetry run mypy packages/
+    
+    - name: Test with pytest
+      run: |
+        poetry run pytest tests/ --cov=packages/ --cov-report=xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: true
